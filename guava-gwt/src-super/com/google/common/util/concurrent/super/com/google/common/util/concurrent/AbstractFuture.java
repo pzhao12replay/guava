@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import javax.annotation.Nullable;
 
 /** Emulation for AbstractFuture in GWT. */
 public abstract class AbstractFuture<V> extends FluentFuture<V> {
@@ -192,7 +192,7 @@ public abstract class AbstractFuture<V> extends FluentFuture<V> {
     return throwable;
   }
 
-  final void maybePropagateCancellationTo(@NullableDecl Future<?> related) {
+  final void maybePropagateCancellationTo(@Nullable Future<?> related) {
     if (related != null & isCancelled()) {
       related.cancel(wasInterrupted());
     }
@@ -232,10 +232,11 @@ public abstract class AbstractFuture<V> extends FluentFuture<V> {
    *
    * @return null if an explanation cannot be provided because the future is done.
    */
-  @NullableDecl
+  @Nullable
   String pendingToString() {
-    if (state == State.DELEGATED) {
-      return "setFuture=[" + delegate + "]";
+    Object localValue = value;
+    if (localValue instanceof AbstractFuture.SetFuture) {
+      return "setFuture=[" + ((AbstractFuture.SetFuture) localValue).delegate + "]";
     }
     return null;
   }
@@ -333,10 +334,8 @@ public abstract class AbstractFuture<V> extends FluentFuture<V> {
       try {
         executor.execute(command);
       } catch (RuntimeException e) {
-        log.log(
-            Level.SEVERE,
-            "RuntimeException while executing runnable " + command + " with executor " + executor,
-            e);
+        log.log(Level.SEVERE, "RuntimeException while executing runnable "
+            + command + " with executor " + executor, e);
       }
     }
   }

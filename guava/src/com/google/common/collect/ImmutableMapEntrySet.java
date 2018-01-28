@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import javax.annotation.Nullable;
 
 /**
  * {@code entrySet()} implementation for {@link ImmutableMap}.
@@ -48,13 +48,6 @@ abstract class ImmutableMapEntrySet<K, V> extends ImmutableSet<Entry<K, V>> {
     @Override
     ImmutableMap<K, V> map() {
       return map;
-    }
-
-    @Override
-    @GwtIncompatible("not used in GWT")
-    int copyIntoArray(Object[] dst, int offset) {
-      System.arraycopy(entries, 0, dst, offset, entries.length);
-      return offset + entries.length;
     }
 
     @Override
@@ -91,7 +84,7 @@ abstract class ImmutableMapEntrySet<K, V> extends ImmutableSet<Entry<K, V>> {
   }
 
   @Override
-  public boolean contains(@NullableDecl Object object) {
+  public boolean contains(@Nullable Object object) {
     if (object instanceof Entry) {
       Entry<?, ?> entry = (Entry<?, ?>) object;
       V value = map().get(entry.getKey());
